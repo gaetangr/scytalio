@@ -1,2 +1,67 @@
-# scytalio
- Scytalio is an open-source API designed for storing and retrieving encrypted messages with end-to-end encryption (E2EE)
+# Scytalio - Securely send, safely receive.
+
+Scytalio is an open-source API designed for storing and retrieving encrypted messages with end-to-end encryption (E2EE). The project name "Scytalio" is derived from the *scytale*, an ancient encryption device used by the Greeks to transmit secret messages securely. This project takes inspiration from that historical method to provide a modern platform for confidential message sharing. 
+
+The goal of Scytalio is to facilitate secure sharing of sensitive content—such as passwords, private notes, or any other personal information—between users or computers. It ensures that only the sender and the recipient can read the content, protecting against data breaches, man-in-the-middle attacks, and other security risks. The project is designed to be easy to use and is an excellent example of building a secure system with FastAPI.
+
+## Project Goals
+
+- **Secure Sharing**: Scytalio aims to facilitate secure, private communication between users, enabling the sharing of sensitive data such as passwords and private notes, with the guarantee that only the intended recipient can decrypt the information.
+- **Avoid Data Breaches**: By encrypting the content and using secure protocols, Scytalio ensures that even if the data is intercepted, it cannot be read by unauthorized parties.
+- **Open-source Contribution**: This project is open for contributions. If you'd like to help improve Scytalio or add new features, feel free to fork the project, create an issue, or submit a pull request.
+- **Burn After Reading**: Messages are automatically deleted after being read to ensure that sensitive data doesn’t linger.
+
+## Installation
+
+1. Clone the repository:
+
+    ```sh
+    git clone https://github.com/gaetangr/scytalio.git
+    cd scytalio
+    ```
+
+2. Create a virtual environment and activate it:
+
+    ```sh
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3. Install the dependencies:
+
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+## Running the Application
+
+1. Start the FastAPI application:
+
+    ```sh
+    uvicorn app.main:app --reload
+    ```
+
+2. The API will be available at `http://127.0.0.1:8000/docs`.
+
+
+## Running Tests
+
+1. Run the tests:
+    ```sh
+    pytest app/tests
+    ```
+
+## Contributing
+
+Scytalio is an open-source project and we welcome contributions! To get started, fork the repository and submit a pull request. Whether you want to fix bugs, improve features, or add new ones, your help is appreciated.
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature-branch`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add feature'`)
+5. Push to the branch (`git push origin feature-branch`)
+6. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

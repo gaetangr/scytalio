@@ -1,0 +1,10 @@
+fastapi[standard]
+uvicorn[standard]
+python-dotenv
+sqlalchemy
+databases
+asyncpg
+psycopg2-binary
+cryptography
+sqlmodel
+ruff
