@@ -3,13 +3,23 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.settings import Settings
 from app.routes import encrypt, decrypt
+from contextlib import asynccontextmanager
 
 
 def create_app() -> FastAPI:
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        create_db_and_tables()
+        try:
+            yield
+        finally:
+            pass
+
     app = FastAPI(
         title="Encrypted Messages API",
         description="API for storing and retrieving encrypted messages",
         version="1.0.0",
+        lifespan=lifespan,
     )
 
     app.add_middleware(
@@ -20,14 +30,8 @@ def create_app() -> FastAPI:
         allow_headers=Settings.ALLOWED_HEADERS,
     )
 
-    # Routes
     app.include_router(encrypt.router)
     app.include_router(decrypt.router)
-
-    @app.on_event("startup")
-    def on_startup() -> None:
-        """Initialize database on startup."""
-        create_db_and_tables()
 
     return app
 
