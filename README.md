@@ -93,6 +93,35 @@ The goal of Scytalio is to facilitate secure sharing of sensitive content—such
     npm run test
     ```
 
+## API Usage
+
+### Encrypt a Message
+
+To encrypt a message, send a POST request to the `/encrypt` endpoint with the following JSON payload:
+
+```json
+{
+  "message": "your_base64_encoded_message",
+  "iv": "your_initialization_vector"
+}
+```
+
+Example using `curl`:
+
+```sh
+curl -X POST "http://127.0.0.1:8000/encrypt" -H "Content-Type: application/json" -d '{"message": "dGVzdCBtZXNzYWdl", "iv": "dGVzdF9pdg=="}'
+```
+
+### Decrypt a Message
+
+To decrypt a message, send a GET request to the `/decrypt/{message_id}` endpoint, where `{message_id}` is the ID of the encrypted message.
+
+Example using `curl`:
+
+```sh
+curl -X GET "http://127.0.0.1:8000/decrypt/{message_id}"
+```
+
 ## Contributing
 
 Scytalio is an open-source project and we welcome contributions! To get started, fork the repository and submit a pull request. Whether you want to fix bugs, improve features, or add new ones, your help is appreciated.
