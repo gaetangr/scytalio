@@ -13,6 +13,8 @@ The goal of Scytalio is to facilitate secure sharing of sensitive content—such
 
 ## Installation
 
+### Backend
+
 1. Clone the repository:
 
     ```sh
@@ -33,7 +35,23 @@ The goal of Scytalio is to facilitate secure sharing of sensitive content—such
     pip install -r requirements.txt
     ```
 
+### Frontend
+
+1. Navigate to the frontend directory:
+
+    ```sh
+    cd frontend
+    ```
+
+2. Install the dependencies:
+
+    ```sh
+    npm install
+    ```
+
 ## Running the Application
+
+### Backend
 
 1. Start the FastAPI application:
 
@@ -43,12 +61,30 @@ The goal of Scytalio is to facilitate secure sharing of sensitive content—such
 
 2. The API will be available at `http://127.0.0.1:8000/docs`.
 
+### Frontend
+
+1. Start the Vue.js application:
+
+    ```sh
+    npm run serve
+    ```
+
+2. The frontend will be available at `http://localhost:8080`.
 
 ## Running Tests
+
+### Backend
 
 1. Run the tests:
     ```sh
     pytest app/tests
+    ```
+
+### Frontend
+
+1. Run the tests:
+    ```sh
+    npm run test
     ```
 
 ## Contributing
@@ -64,4 +100,4 @@ Scytalio is an open-source project and we welcome contributions! To get started,
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](http://_vscodecontentref_/1) file for details.
