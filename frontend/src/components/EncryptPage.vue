@@ -248,10 +248,29 @@
           );
     
           this.encryptedMessage = this.toBase64UrlSafe(btoa(String.fromCharCode(...new Uint8Array(encrypted))));
-          this.encryptedLink = `${window.location.origin}/decrypt/${this.encryptedMessage}?key=${this.generatedKey}`;
+    
+          // Send encrypted message and IV to the server
+          const response = await fetch('http://127.0.0.1:8000/encrypt', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              message: this.encryptedMessage,
+              iv: this.iv,
+            }),
+          });
+    
+          if (!response.ok) {
+            throw new Error("Failed to send data to the server.");
+          }
+    
+          const result = await response.json();
+          const messageId = result.id;
+    
+          this.encryptedLink = `${window.location.origin}/decrypt/${messageId}?key=${this.generatedKey}`;
     
           this.decryptMessage(key, ivBytes, encrypted);
-          this.sendToServer();
     
         } catch (error) {
           console.error("Error during encryption:", error);
@@ -273,12 +292,6 @@
           console.error("Error during decryption:", error);
           this.errorMessage = "An error occurred during decryption.";
         }
-      },
-      
-      sendToServer() {
-        console.log("Simulating server data transmission...");
-        console.log("Encrypted Message:", this.encryptedMessage);
-        console.log("IV:", this.iv);
       },
       
       copyToClipboard(text) {
