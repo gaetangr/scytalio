@@ -14,6 +14,11 @@ class MessageService:
     ) -> EncryptedContent:
         """Create a new encrypted message."""
         encrypted_message = EncryptedContent(message=content.message, iv=content.iv)
+        if not encrypted_message.message:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Message cannot be empty",
+            )
         try:
             session.add(encrypted_message)
             session.commit()

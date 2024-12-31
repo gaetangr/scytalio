@@ -250,7 +250,7 @@
           this.encryptedMessage = this.toBase64UrlSafe(btoa(String.fromCharCode(...new Uint8Array(encrypted))));
     
           // Send encrypted message and IV to the server
-          const response = await fetch('http://127.0.0.1:8000/encrypt', {
+          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/encrypt`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -262,7 +262,13 @@
           });
     
           if (!response.ok) {
-            throw new Error("Failed to send data to the server.");
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+              const errorData = await response.json();
+              throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
+            } else {
+              throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
           }
     
           const result = await response.json();
@@ -293,7 +299,6 @@
           this.errorMessage = "An error occurred during decryption.";
         }
       },
-      
       copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(() => {
           this.showCopyAlert = true;

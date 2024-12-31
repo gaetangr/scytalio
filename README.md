@@ -49,6 +49,12 @@ The goal of Scytalio is to facilitate secure sharing of sensitive content—such
     npm install
     ```
 
+3. Create a `.env` file in the root of the frontend directory and add the following line:
+
+    ```sh
+    echo "VITE_API_BASE_URL=http://127.0.0.1:8000" > .env
+    ```
+
 ## Running the Application
 
 ### Backend
