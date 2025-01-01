@@ -76,6 +76,9 @@ export default {
       try {
         console.log("Fetching message with ID:", this.messageId);
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/decrypt/${this.messageId}`);
+        if (response.status === 429) {
+          throw new Error("Too many requests. Please try again later.");
+        }
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
@@ -136,7 +139,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* Add any specific styles if necessary */
-</style>

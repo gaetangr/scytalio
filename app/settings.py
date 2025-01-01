@@ -14,3 +14,4 @@ class Settings:
     ALLOWED_METHODS: list[str] = ["*"]
     ALLOWED_HEADERS: list[str] = ["*"]
     ALLOW_CREDENTIALS: bool = True
+    RATE_LIMITING_DEFAULT: int = os.getenv("", 20)
