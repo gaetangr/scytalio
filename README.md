@@ -77,6 +77,32 @@ The goal of Scytalio is to facilitate secure sharing of sensitive content—such
 
 2. The frontend will be available at `http://localhost:8080`.
 
+## Running the Application with Docker and Nginx
+
+1. Ensure Docker and Docker Compose are installed on your machine.
+
+2. Clone the repository:
+
+    ```sh
+    git clone https://github.com/gaetangr/scytalio.git
+    cd scytalio
+    ```
+
+3. Create a `.env` file in the root directory and add the following lines:
+
+    ```sh
+    echo "DATABASE_URL=sqlite:///./scytalio.db" > .env
+    echo "VITE_API_BASE_URL=http://localhost:8000" >> .env
+    ```
+
+4. Build and start the services using Docker Compose:
+
+    ```sh
+    docker-compose up --build
+    ```
+
+5. The frontend will be available at `http://localhost`, and the API will be available at `http://localhost/api`.
+
 ## Running Tests
 
 ### Backend
@@ -136,3 +162,15 @@ Scytalio is an open-source project and we welcome contributions! To get started,
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](http://_vscodecontentref_/1) file for details.
+
+## Self-Hosting
+
+Scytalio can be self-hosted, allowing you to run your own instance of the application. This is useful if you want to have full control over your data and the environment in which the application runs.
+
+### Features
+
+- **Self-Hosting**: Run your own instance of Scytalio on your server.
+- **Network Sharing**: Share encrypted messages within your network securely.
+- **Customizable**: Modify the source code to fit your specific needs.
+
+To get started with self-hosting, follow the instructions in the "Running the Application with Docker and Nginx" section above.
