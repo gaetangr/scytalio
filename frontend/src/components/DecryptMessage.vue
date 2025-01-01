@@ -21,6 +21,15 @@
             class="btn btn-secondary mt-4">
             Copy Message
           </button>
+          <button 
+            @click="downloadMessage" 
+            class="btn btn-secondary mt-4 ml-2">
+            Download as Text
+          </button>
+          <div class="alert alert-info mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>The decrypted message will be deleted after refreshing the page.</span>
+          </div>
         </div>
         
         <div v-if="errorMessage" class="alert alert-error shadow-lg">
@@ -112,6 +121,22 @@ export default {
         console.error("Failed to copy: ", err);
       });
     },
+
+    downloadMessage() {
+      const blob = new Blob([this.decryptedMessage], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'decrypted_message.txt';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    },
   },
 };
 </script>
+
+<style scoped>
+/* Add any specific styles if necessary */
+</style>
