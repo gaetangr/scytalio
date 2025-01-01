@@ -5,18 +5,6 @@ from sqlmodel.pool import StaticPool
 from app.models import EncryptedContent
 from app.services import MessageService
 
-engine = create_engine(
-    "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-)
-
-
-@pytest.fixture(name="session")
-def session_fixture():
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
-    SQLModel.metadata.drop_all(engine)
-
 
 @pytest.mark.asyncio
 async def test_create_message(session: Session):

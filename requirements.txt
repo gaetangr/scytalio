@@ -7,4 +7,7 @@ asyncpg
 psycopg2-binary
 cryptography
 sqlmodel
+pytest
+pytest-cov
+pytest-asyncio
 ruff
