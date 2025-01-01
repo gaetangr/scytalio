@@ -77,6 +77,30 @@ The goal of Scytalio is to facilitate secure sharing of sensitive content—such
 
 2. The frontend will be available at `http://localhost:8080`.
 
+## Running the Application with Docker
+
+### Prerequisites
+
+- Docker installed on your system
+- Docker Compose installed on your system
+
+### Steps
+
+1. Clone the repository:
+
+    ```sh
+    git clone https://github.com/gaetangr/scytalio.git
+    cd scytalio
+    ```
+
+2. Build and start the services:
+
+    ```sh
+    docker-compose up --build
+    ```
+
+3. The backend API will be available at `http://127.0.0.1:8000/docs` and the frontend will be available at `http://localhost:3000`.
+
 ## Running Tests
 
 ### Backend
@@ -121,6 +145,30 @@ Example using `curl`:
 ```sh
 curl -X GET "http://127.0.0.1:8000/decrypt/{message_id}"
 ```
+
+## Self-Hosting in CasaOS or Any Other OS Using Docker
+
+### Prerequisites
+
+- Docker installed on your system
+- Docker Compose installed on your system
+
+### Steps
+
+1. Clone the repository:
+
+    ```sh
+    git clone https://github.com/gaetangr/scytalio.git
+    cd scytalio
+    ```
+
+2. Build and start the services:
+
+    ```sh
+    docker-compose up --build
+    ```
+
+3. The backend API will be available at `http://127.0.0.1:8000/docs` and the frontend will be available at `http://localhost:3000`.
 
 ## Contributing
 
