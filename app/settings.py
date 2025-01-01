@@ -10,6 +10,7 @@ SQLITE_CONNECT_ARGS = {"check_same_thread": False}
 class Settings:
     """Application settings and constants."""
 
+    DEBUG: bool = os.getenv("DEBUG", False)
     ALLOWED_ORIGINS: list[str] = ["*"]
     ALLOWED_METHODS: list[str] = ["*"]
     ALLOWED_HEADERS: list[str] = ["*"]

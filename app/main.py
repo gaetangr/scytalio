@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 
 def create_app() -> FastAPI:
@@ -36,6 +37,8 @@ def create_app() -> FastAPI:
         allow_methods=Settings.ALLOWED_METHODS,
         allow_headers=Settings.ALLOWED_HEADERS,
     )
+    if not Settings.DEBUG:
+        app.add_middleware(HTTPSRedirectMiddleware)
 
     app.include_router(encrypt.router)
     app.include_router(decrypt.router)
