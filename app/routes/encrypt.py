@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 from typing import Annotated
-from app.models import EncryptedContent
-from app.services import MessageService
-from app.utils import is_base64
-from ..database import get_session
+from models import EncryptedContent
+from services import MessageService
+from utils import is_base64
+from database import get_session
 from fastapi import APIRouter, Depends, HTTPException, status
 from slowapi.util import get_remote_address
 from slowapi import Limiter
-from ..settings import Settings
+from settings import Settings
 
 router = APIRouter()
 

@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 from uuid import UUID
 
-from app.settings import Settings
+from settings import Settings
 
-from ..models import EncryptedContent
-from ..services import MessageService
-from ..database import get_session
+from models import EncryptedContent
+from services import MessageService
+from database import get_session
 from slowapi.util import get_remote_address
 from slowapi import Limiter
 

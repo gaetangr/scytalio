@@ -1,8 +1,8 @@
-from app.database import create_db_and_tables
+from database import create_db_and_tables
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.settings import Settings
-from app.routes import encrypt, decrypt
+from settings import Settings
+from routes import encrypt, decrypt
 from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -37,8 +37,6 @@ def create_app() -> FastAPI:
         allow_methods=Settings.ALLOWED_METHODS,
         allow_headers=Settings.ALLOWED_HEADERS,
     )
-    if not Settings.DEBUG:
-        app.add_middleware(HTTPSRedirectMiddleware)
 
     app.include_router(encrypt.router)
     app.include_router(decrypt.router)

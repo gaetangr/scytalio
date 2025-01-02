@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlmodel import Session
-from app.models import EncryptedContent
+from models import EncryptedContent
 from sqlalchemy.exc import IntegrityError
 
 
