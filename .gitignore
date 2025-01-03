@@ -183,3 +183,4 @@ symlink-from
 .idea/
 scytalio.db
 .vscode/settings.json
+app/test.db

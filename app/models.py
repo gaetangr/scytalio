@@ -38,6 +38,7 @@ class EncryptedContent(SQLModel, table=True):
         all recent browsers See [MDN Web Docs on Crypto](https://developer.mozilla.org/en-US/docs/Web/API/Crypto).
     """
 
+    __table_args__ = {"extend_existing": True}
     id: str = Field(
         default_factory=lambda: str(uuid.uuid4()),
         primary_key=True,
