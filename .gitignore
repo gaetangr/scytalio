@@ -184,3 +184,4 @@ symlink-from
 scytalio.db
 .vscode/settings.json
 app/test.db
+testing.db
