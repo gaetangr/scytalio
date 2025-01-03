@@ -26,11 +26,6 @@ jobs:
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/app" >> $GITHUB_ENV
 
-    - name: Generate Report
-      run: |
-        pip install pytest-cov
-        pytest --cov=app --cov-report=xml
-
     - name: Run Tests
       run: |
         pytest app/tests
