@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 import pytest
-from sqlmodel import Session, SQLModel, create_engine
-from sqlalchemy.pool import StaticPool
+from sqlmodel import Session
 
+from app.database import engine, create_db_and_tables
 from app.main import app
 
 # This conftest.py file is used by pytest to define shared fixtures
@@ -11,25 +11,14 @@ from app.main import app
 # https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files
 
 
-@pytest.fixture(scope="session")
-def engine():
-    engine = create_engine(
-        "sqlite:///./test.db",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-    SQLModel.metadata.create_all(engine)
-    yield engine
-    SQLModel.metadata.drop_all(engine)
-
-
-@pytest.fixture
-def session(engine):
+@pytest.fixture(scope="module")
+def session():
+    create_db_and_tables()
     with Session(engine) as session:
         yield session
-        session.rollback()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def client():
-    return TestClient(app)
+    with TestClient(app) as client:
+        yield client
