@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_encrypt_endpoint(client):
     response = client.post("/encrypt", json={"message": "test", "iv": "test"})
     assert response.status_code == 201
