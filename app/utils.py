@@ -6,6 +6,8 @@ def is_base64(sb):
     Check if message is base64, based on this [StackOverflow](https://stackoverflow.com/a/45928164) answer
     """
     try:
+        if not sb:
+            return False
         if isinstance(sb, str):
             sb_bytes = bytes(sb, "ascii")
         elif isinstance(sb, bytes):
