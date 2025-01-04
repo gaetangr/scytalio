@@ -12,3 +12,5 @@ pytest-asyncio
 slowapi
 ruff
 alembic
+pydantic
+pydantic-settings
