@@ -4,7 +4,6 @@ from models import EncryptedContent
 from sqlalchemy.exc import IntegrityError
 
 
-# NOTE: Is @staticmethod make sense here ?
 class MessageService:
     """Business logic for message handling"""
 
@@ -12,7 +11,19 @@ class MessageService:
     async def create_message(
         content: EncryptedContent, session: Session
     ) -> EncryptedContent:
-        """Create a new encrypted message."""
+        """
+        Create a new encrypted message.
+
+        Args:
+            content (EncryptedContent): The encrypted message content.
+            session (Session): The database session.
+
+        Returns:
+            EncryptedContent: The stored encrypted message content.
+
+        Raises:
+            HTTPException: If the message format is invalid or message creation fails.
+        """
         encrypted_message = EncryptedContent(message=content.message, iv=content.iv)
         if not encrypted_message.message:
             raise HTTPException(
@@ -33,7 +44,19 @@ class MessageService:
 
     @staticmethod
     async def get_message(message_id: str, session: Session) -> EncryptedContent:
-        """Retrieve an encrypted message by ID."""
+        """
+        Retrieve an encrypted message by ID.
+
+        Args:
+            message_id (str): The ID of the encrypted message.
+            session (Session): The database session.
+
+        Returns:
+            EncryptedContent: The retrieved encrypted message content.
+
+        Raises:
+            HTTPException: If the message is not found or an error occurs during deletion.
+        """
         message = session.get(EncryptedContent, message_id)
         if message:
             try:

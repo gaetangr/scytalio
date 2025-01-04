@@ -24,7 +24,23 @@ router = APIRouter()
 async def get_encrypted_message(
     request: Request, message_id: str, session: Annotated[Session, Depends(get_session)]
 ) -> EncryptedContent:
-    """Retrieve an encrypted message by ID."""
+    """
+    Retrieve an encrypted message by ID.
+
+    This endpoint accepts a message ID in UUID format and retrieves the corresponding encrypted message from the database.
+    It validates the message ID format and returns the encrypted message content.
+
+    Args:
+        request (Request): The request object.
+        message_id (str): The ID of the encrypted message.
+        session (Session): The database session.
+
+    Returns:
+        EncryptedContent: The retrieved encrypted message content.
+
+    Raises:
+        HTTPException: If the message ID format is invalid or the message is not found.
+    """
     try:
         UUID(message_id)
         return await MessageService.get_message(message_id, session)

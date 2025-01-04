@@ -174,3 +174,23 @@ Scytalio can be self-hosted, allowing you to run your own instance of the applic
 - **Customizable**: Modify the source code to fit your specific needs.
 
 To get started with self-hosting, follow the instructions in the "Running the Application with Docker and Nginx" section above.
+
+## Architecture
+
+The Scytalio project is composed of a frontend and a backend that interact to provide a secure messaging service.
+
+### Frontend
+
+The frontend is built using Vue.js and provides a user interface for creating and decrypting messages. It communicates with the backend API to store and retrieve encrypted messages. The frontend handles the encryption and decryption of messages using the Web Crypto API, ensuring that the encryption keys never leave the user's browser.
+
+### Backend
+
+The backend is built using FastAPI and provides a RESTful API for storing and retrieving encrypted messages. It uses a SQLite database to store the encrypted messages and their associated initialization vectors (IVs). The backend does not perform any encryption or decryption operations; it simply stores and retrieves the encrypted data.
+
+### Interaction
+
+1. **Message Encryption**: When a user creates a message, the frontend encrypts the message using a randomly generated key and IV. The encrypted message and IV are then sent to the backend API, which stores them in the database.
+
+2. **Message Decryption**: When a user wants to decrypt a message, the frontend retrieves the encrypted message and IV from the backend API. The frontend then uses the stored key and IV to decrypt the message in the user's browser.
+
+This architecture ensures that the encryption keys never leave the user's browser, providing end-to-end encryption and ensuring that only the intended recipient can decrypt the message.

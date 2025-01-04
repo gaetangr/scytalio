@@ -28,7 +28,23 @@ async def encrypt_message(
     content: EncryptedContent,
     session: Annotated[Session, Depends(get_session)],
 ) -> EncryptedContent:
-    """Create a new encrypted message."""
+    """
+    Create a new encrypted message.
+
+    This endpoint accepts an encrypted message and its initialization vector (IV) in Base64 format.
+    It validates the message format and stores it in the database.
+
+    Args:
+        request (Request): The request object.
+        content (EncryptedContent): The encrypted message content.
+        session (Session): The database session.
+
+    Returns:
+        EncryptedContent: The stored encrypted message content.
+
+    Raises:
+        HTTPException: If the message format is invalid.
+    """
     try:
         is_base64(content.message)
         return await MessageService.create_message(content, session)

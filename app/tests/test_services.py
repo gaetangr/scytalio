@@ -88,3 +88,25 @@ async def test_get_message_delete_error(session, encrypted_content):
         exc_info.value.detail
         == "An error occurred while deleting the message after reading."
     )
+
+
+@pytest.mark.asyncio
+async def test_create_message_invalid_format(session):
+    invalid_content = EncryptedContent(message="invalid_base64_message", iv="test_iv")
+
+    with pytest.raises(HTTPException) as exc_info:
+        await MessageService.create_message(invalid_content, session)
+
+    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+    assert exc_info.value.detail == "Invalid message format, expected base64 format"
+
+
+@pytest.mark.asyncio
+async def test_get_message_invalid_format(session):
+    invalid_message_id = "invalid_uuid"
+
+    with pytest.raises(HTTPException) as exc_info:
+        await MessageService.get_message(invalid_message_id, session)
+
+    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+    assert exc_info.value.detail == "Invalid message ID format, UUID expected."
