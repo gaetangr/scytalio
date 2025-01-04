@@ -2,6 +2,7 @@ import uuid
 from pydantic import ConfigDict
 from sqlmodel import Field, SQLModel
 from pydantic import ConfigDict
+from sqlalchemy import Index, inspect
 
 
 class EncryptedContent(SQLModel, table=True):
@@ -53,3 +54,10 @@ class EncryptedContent(SQLModel, table=True):
     )
 
     model_config = ConfigDict(from_attributes=True)
+
+    @classmethod
+    def create_index(cls, engine):
+        inspector = inspect(engine)
+        indexes = [index['name'] for index in inspector.get_indexes(cls.__tablename__)]
+        if 'ix_encryptedcontent_message' not in indexes:
+            Index('ix_encryptedcontent_message', cls.message).create(bind=engine)
