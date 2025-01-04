@@ -28,6 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r app/requirements.txt
         pip install pytest-cov
+        pip install pytest-asyncio
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/app" >> $GITHUB_ENV
