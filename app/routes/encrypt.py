@@ -5,7 +5,7 @@ from models import EncryptedContent
 from services import MessageService
 from utils import is_base64
 from database import get_session
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import HTTPException
 from slowapi.util import get_remote_address
 from slowapi import Limiter
 from settings import Settings

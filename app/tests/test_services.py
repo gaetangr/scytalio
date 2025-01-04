@@ -1,42 +1,90 @@
-from fastapi import HTTPException, status
+from unittest.mock import MagicMock
 import pytest
-from sqlmodel import Session
-from app.models import EncryptedContent
-from app.services import MessageService
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
+from models import EncryptedContent
+from services import MessageService
 
 
 @pytest.mark.asyncio
-async def test_create_message(session: Session):
-    content = EncryptedContent(message="test message", iv="test_iv")
-    created_message = await MessageService.create_message(content, session)
+async def test_create_message_success(session, encrypted_content):
+    session.add = MagicMock()
+    session.commit = MagicMock()
+    session.refresh = MagicMock()
 
-    assert created_message.message == content.message
-    assert created_message.iv == content.iv
-    assert created_message.id is not None
+    result = await MessageService.create_message(encrypted_content, session)
 
-    db_message = session.get(EncryptedContent, created_message.id)
-    assert db_message is not None
-    assert db_message.message == content.message
-    assert db_message.iv == content.iv
-
-
-@pytest.mark.asyncio
-async def test_get_message(session: Session):
-    content = EncryptedContent(message="test message", iv="test_iv")
-    created_message = await MessageService.create_message(content, session)
-
-    retrieved_message = await MessageService.get_message(created_message.id, session)
-
-    assert retrieved_message.message == content.message
-    assert retrieved_message.iv == content.iv
-    assert retrieved_message.id == created_message.id
+    session.add.assert_called_once()
+    session.commit.assert_called_once()
+    session.refresh.assert_called_once()
+    assert result.message == encrypted_content.message
+    assert result.iv == encrypted_content.iv
 
 
 @pytest.mark.asyncio
-async def test_get_message_not_found(session: Session):
-    non_existent_id = "non-existent-id"
+async def test_create_message_empty_content(session):
+    empty_content = EncryptedContent(message="", iv="test_iv")
+
     with pytest.raises(HTTPException) as exc_info:
-        await MessageService.get_message(non_existent_id, session)
+        await MessageService.create_message(empty_content, session)
+
+    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+    assert exc_info.value.detail == "Message cannot be empty"
+
+
+@pytest.mark.asyncio
+async def test_create_message_integrity_error(session, encrypted_content):
+    session.add = MagicMock()
+    session.commit = MagicMock(side_effect=IntegrityError(None, None, None))
+    session.rollback = MagicMock()
+
+    with pytest.raises(HTTPException) as exc_info:
+        await MessageService.create_message(encrypted_content, session)
+
+    session.rollback.assert_called_once()
+    assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+    assert exc_info.value.detail == "Message creation failed due to integrity error"
+
+
+@pytest.mark.asyncio
+async def test_get_message_success(session, encrypted_content):
+    session.get = MagicMock(return_value=encrypted_content)
+    session.delete = MagicMock()
+    session.commit = MagicMock()
+
+    result = await MessageService.get_message("test_id", session)
+
+    session.get.assert_called_once_with(EncryptedContent, "test_id")
+    session.delete.assert_called_once_with(encrypted_content)
+    session.commit.assert_called_once()
+    assert result.message == encrypted_content.message
+    assert result.iv == encrypted_content.iv
+
+
+@pytest.mark.asyncio
+async def test_get_message_not_found(session):
+    session.get = MagicMock(return_value=None)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await MessageService.get_message("test_id", session)
 
     assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
     assert exc_info.value.detail == "Message not found"
+
+
+@pytest.mark.asyncio
+async def test_get_message_delete_error(session, encrypted_content):
+    session.get = MagicMock(return_value=encrypted_content)
+    session.delete = MagicMock()
+    session.commit = MagicMock(side_effect=Exception)
+    session.rollback = MagicMock()
+
+    with pytest.raises(HTTPException) as exc_info:
+        await MessageService.get_message("test_id", session)
+
+    session.rollback.assert_called_once()
+    assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+    assert (
+        exc_info.value.detail
+        == "An error occurred while deleting the message after reading."
+    )
