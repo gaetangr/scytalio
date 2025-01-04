@@ -1,5 +1,10 @@
 name: Scytalio Build
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 on:
   push:
     branches: [ "staging", "main" ]
@@ -22,10 +27,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r app/requirements.txt
+        pip install pytest-cov
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)/app" >> $GITHUB_ENV
 
-    - name: Run Tests
+    - name: Run Tests with Coverage
       run: |
-        pytest app/tests
+        pytest app/tests --cov=app --cov-report=xml
