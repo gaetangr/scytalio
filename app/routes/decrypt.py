@@ -20,7 +20,7 @@ router = APIRouter()
 # The request argument must be explicitly passed to
 # the endpoint for the rate limiter to work.
 @router.get("/decrypt/{message_id}", response_model=EncryptedContent)
-@limiter.limit(f"{Settings.RATE_LIMITING_DEFAULT}/minute")
+@limiter.limit(f"{Settings().RATE_LIMITING_DEFAULT}/minute")
 async def get_encrypted_message(
     request: Request, message_id: str, session: Annotated[Session, Depends(get_session)]
 ) -> EncryptedContent:

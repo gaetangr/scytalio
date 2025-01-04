@@ -8,6 +8,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
+settings = Settings()
 
 def create_app() -> FastAPI:
     @asynccontextmanager
@@ -31,10 +32,10 @@ def create_app() -> FastAPI:
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=Settings.ALLOWED_ORIGINS,
-        allow_credentials=Settings.ALLOW_CREDENTIALS,
-        allow_methods=Settings.ALLOWED_METHODS,
-        allow_headers=Settings.ALLOWED_HEADERS,
+        allow_origins=settings.ALLOWED_ORIGINS,
+        allow_credentials=settings.ALLOW_CREDENTIALS,
+        allow_methods=settings.ALLOWED_METHODS,
+        allow_headers=settings.ALLOWED_HEADERS,
     )
 
     app.include_router(encrypt.router)

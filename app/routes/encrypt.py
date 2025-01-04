@@ -22,7 +22,7 @@ limiter = Limiter(key_func=get_remote_address)
     response_model=EncryptedContent,
     status_code=status.HTTP_201_CREATED,
 )
-@limiter.limit(f"{Settings.RATE_LIMITING_DEFAULT}/minute")
+@limiter.limit(f"{Settings().RATE_LIMITING_DEFAULT}/minute")
 async def encrypt_message(
     request: Request,
     content: EncryptedContent,

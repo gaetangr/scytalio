@@ -1,13 +1,11 @@
 from sqlmodel import SQLModel, create_engine, Session
-import os
-from dotenv import load_dotenv
+from settings import Settings
 from typing import Generator
 from models import EncryptedContent
 
-load_dotenv()
+settings = Settings()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./scytalio.db")
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(settings.DATABASE_URL, echo=settings.DEBUG)
 
 
 def create_db_and_tables() -> None:
