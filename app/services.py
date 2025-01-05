@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 from sqlmodel import Session
+from constants import ErrorMessages
 from models import EncryptedContent
 from sqlalchemy.exc import IntegrityError
 
@@ -28,7 +29,7 @@ class MessageService:
             session.rollback()
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Message creation failed due to integrity error",
+                detail=ErrorMessages.INTEGRITY_ERROR,
             )
 
     @staticmethod
@@ -37,8 +38,9 @@ class MessageService:
         message = session.get(EncryptedContent, message_id)
         if message:
             try:
-                session.delete(message)
-                session.commit()
+                if message.burn_after_reading:
+                    session.delete(message)
+                    session.commit()
                 return EncryptedContent.model_validate(message)
             except Exception:
                 session.rollback()
@@ -47,5 +49,52 @@ class MessageService:
                     detail="An error occurred while deleting the message after reading.",
                 )
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Message not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=ErrorMessages.MESSAGE_NOT_FOUND,
         )
+
+    @staticmethod
+    async def delete_message(message_id: str, session: Session) -> EncryptedContent:
+        """Delete an encrypted message by ID."""
+        message = session.get(EncryptedContent, message_id)
+
+        try:
+            if not message:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=ErrorMessages.MESSAGE_NOT_FOUND,
+                )
+            deleted_message = EncryptedContent.model_validate(message)
+            session.delete(message)
+            session.commit()
+            return deleted_message
+
+        except Exception:
+            session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=ErrorMessages.DELETE_ERROR,
+            )
+
+    @staticmethod
+    async def delete_message(message_id: str, session: Session) -> EncryptedContent:
+        """Delete an encrypted message by ID."""
+        message = session.get(EncryptedContent, message_id)
+        if not message:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=ErrorMessages.MESSAGE_NOT_FOUND,
+            )
+        try:
+
+            deleted_message = EncryptedContent.model_validate(message)
+            session.delete(message)
+            session.commit()
+            return deleted_message
+
+        except Exception:
+            session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=ErrorMessages.DELETE_ERROR,
+            )

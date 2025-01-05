@@ -50,5 +50,9 @@ class EncryptedContent(SQLModel, table=True):
     iv: str = Field(
         description="The initialization vector used for encryption, sent in clear."
     )
+    burn_after_reading: bool = Field(
+        description="Default to true, can be read only once and then it is deleted.",
+        default=True,
+    )
 
     model_config = ConfigDict(from_attributes=True)

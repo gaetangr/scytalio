@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -13,5 +13,4 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///database.db"
     SQLITE_CONNECT_ARGS: dict = {"check_same_thread": False}
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env", extra="allow")

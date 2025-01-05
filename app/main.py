@@ -2,13 +2,14 @@ from database import create_db_and_tables
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from settings import Settings
-from routes import encrypt, decrypt
 from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from routes import router
 
 settings = Settings()
+
 
 def create_app() -> FastAPI:
     @asynccontextmanager
@@ -38,9 +39,7 @@ def create_app() -> FastAPI:
         allow_headers=settings.ALLOWED_HEADERS,
     )
 
-    app.include_router(encrypt.router)
-    app.include_router(decrypt.router)
-
+    app.include_router(router)
     return app
 
 

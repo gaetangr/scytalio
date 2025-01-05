@@ -6,7 +6,6 @@ from models import EncryptedContent
 
 from app.database import engine, get_session
 from app.main import app
-from app.settings import Settings
 
 # This conftest.py file is used by pytest to define shared fixtures
 # across multiple test files. Fixtures allow you to set up states
