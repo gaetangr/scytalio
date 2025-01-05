@@ -11,10 +11,9 @@ class MessageService:
 
     @staticmethod
     async def create_message(
-        content: EncryptedContent, session: Session
+        encrypted_message: EncryptedContent, session: Session
     ) -> EncryptedContent:
         """Create a new encrypted message."""
-        encrypted_message = EncryptedContent(message=content.message, iv=content.iv)
         if not encrypted_message.message:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -23,6 +22,7 @@ class MessageService:
         try:
             session.add(encrypted_message)
             session.commit()
+            print(encrypted_message.burn_after_reading)
             session.refresh(encrypted_message)
             return EncryptedContent.model_validate(encrypted_message)
         except IntegrityError:

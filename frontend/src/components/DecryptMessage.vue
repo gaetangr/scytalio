@@ -1,40 +1,70 @@
 <template>
-  <div class="container mx-auto p-10">
-    <div class="text-center mb-6">
-      <p class="text-lg text-base-content">Safely sent with Scytalio</p>
-    </div>
-    <div class="shadow-md rounded-lg p-8 max-w-4xl mx-auto bg-base-100">
-      <h1 class="text-3xl font-bold mb-6 text-center text-base-content">Message Decryption</h1>
+  <div class="container mx-auto p-4 md:p-10">
+
+    <div class="shadow-xl rounded-xl p-6 md:p-10 max-w-5xl mx-auto bg-base-100">
+      <h1 class="text-4xl font-bold mb-8 text-center text-base-content">Message Decryption</h1>
       
-      <div v-if="isLoading" class="flex justify-center items-center">
+      <div v-if="isLoading" class="flex justify-center items-center py-12">
         <div class="text-center">
-          <p class="text-lg text-base-content">Loading...</p>
+          <p class="text-xl text-base-content">Loading...</p>
         </div>
       </div>
       
       <div v-else>
-        <div v-if="decryptedMessage" class="bg-base-200 p-6 rounded-lg mb-4">
-          <h2 class="text-xl font-semibold mb-2 text-base-content">Decrypted Message:</h2>
-          <p class="break-words text-base-content">{{ decryptedMessage }}</p>
-          <button 
-            @click="copyToClipboard(decryptedMessage)" 
-            class="btn btn-secondary mt-4">
-            Copy Message
-          </button>
-          <button 
-            @click="downloadMessage" 
-            class="btn btn-secondary mt-4 ml-2">
-            Download as Text
-          </button>
-          <div class="alert alert-info mt-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span>The decrypted message will be deleted after refreshing the page.</span>
+        <div v-if="decryptedMessage" class="space-y-6">
+          <div class="bg-base-200 p-8 rounded-xl">
+            <h2 class="text-2xl font-semibold mb-4 text-base-content">Decrypted Message:</h2>
+            <p class="text-lg break-words text-base-content leading-relaxed min-h-[100px]">
+              <a 
+                v-if="isUrl(decryptedMessage)" 
+                :href="decryptedMessage" 
+                target="_blank" 
+                class="text-primary hover:underline"
+              >
+                {{ decryptedMessage }}
+              </a>
+              <span v-else>{{ decryptedMessage }}</span>
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-4 justify-start mt-6">
+            <button 
+              @click="copyToClipboard(decryptedMessage)" 
+              class="btn btn-primary">
+              Copy Message
+            </button>
+            <button 
+              @click="downloadMessage" 
+              class="btn btn-secondary">
+              Download as Text
+            </button>
+            <button 
+              v-if="!messageData?.burn_after_reading" 
+              @click="deleteMessage" 
+              class="btn btn-error">
+              Delete Message
+            </button>
+          </div>
+     
+          <div class="alert alert-info shadow-lg mt-8">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="flex flex-col gap-1">
+              <span class="font-medium">Security Notice</span>
+              <span class="text-sm opacity-90">The decrypted message will be deleted after refreshing the page for your security.</span>
+            </div>
           </div>
         </div>
         
-        <div v-if="errorMessage" class="alert alert-error shadow-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span>{{ errorMessage }}</span>
+        <div v-if="errorMessage" class="alert alert-error shadow-lg mt-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="flex flex-col gap-1">
+            <span class="font-medium">Error</span>
+            <span class="text-sm">{{ errorMessage }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -51,6 +81,7 @@ export default {
       errorMessage: null,
       isLoading: true,
       key: null,
+      messageData: null
     };
   },
 
@@ -86,7 +117,7 @@ export default {
         const result = await response.json();
         console.log("Fetched data:", result);
 
-        this.encryptedMessage = result.message;
+        this.messageData = result;
         const ivBytes = Uint8Array.from(this.fromBase64UrlSafe(result.iv), c => c.charCodeAt(0));
         const encryptedBytes = Uint8Array.from(this.fromBase64UrlSafe(result.message), c => c.charCodeAt(0));
 
@@ -135,6 +166,33 @@ export default {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
+    },
+
+    async deleteMessage() {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/delete/${this.messageId}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
+        }
+        this.decryptedMessage = null;
+        console.log("Message deleted successfully");
+        this.$router.push('/');
+      } catch (error) {
+        console.error("Error during deletion:", error);
+        this.errorMessage = error.message || "An error occurred during deletion.";
+      }
+    },
+
+    isUrl(text) {
+      try {
+        new URL(text);
+        return true;
+      } catch (_) {
+        return false;
+      }
     },
   },
 };
