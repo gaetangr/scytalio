@@ -184,3 +184,6 @@ symlink-from
 scytalio.db
 .vscode/settings.json
 *.db
+app/static/openapi.json
+app/static/redoc.html
+app/static/swagger.html

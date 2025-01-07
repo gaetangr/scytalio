@@ -34,7 +34,7 @@ def generate_static_docs(app: FastAPI, output_dir: str):
         openapi_url="./openapi.json",
         title=f"{app.title} - Swagger UI",
     ).body.decode("utf-8")
-    with open(f"{output_dir}/swagger.html", "w") as f:
+    with open(f"{output_dir}/docs.html", "w") as f:
         f.write(swagger_ui)
     redoc = get_redoc_html(
         openapi_url="./openapi.json",
