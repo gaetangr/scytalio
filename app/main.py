@@ -48,4 +48,6 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-generate_static_docs(app, "static")
+
+if __name__ == "__main__":
+    generate_static_docs(app, "app/static")
