@@ -1,0 +1,211 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Encrypted Messages API",
+    "description": "API for storing and retrieving encrypted messages",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/decrypt/{message_id}": {
+      "get": {
+        "summary": "Get Message",
+        "description": "Retrieve an encrypted message by ID.",
+        "operationId": "get_message_decrypt__message_id__get",
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Message Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EncryptedContent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/encrypt": {
+      "post": {
+        "summary": "Create Message",
+        "description": "Create a new encrypted message.",
+        "operationId": "create_message_encrypt_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EncryptedContent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EncryptedContent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delete/{message_id}": {
+      "delete": {
+        "summary": "Delete Message",
+        "description": "Delete an encrypted message.",
+        "operationId": "delete_message_delete__message_id__delete",
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Message Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EncryptedContent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EncryptedContent": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "A unique identifier for the encrypted content, used in the URL."
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "The encrypted message content, encoded in Base64."
+          },
+          "iv": {
+            "type": "string",
+            "title": "Iv",
+            "description": "The initialization vector used for encryption, sent in clear."
+          },
+          "burn_after_reading": {
+            "type": "boolean",
+            "title": "Burn After Reading",
+            "description": "Default to true, can be read only once and then it is deleted.",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "iv"
+        ],
+        "title": "EncryptedContent",
+        "description": "Database model representing encrypted content.\n\nThis model is used to store encrypted messages and their corresponding\ninitialization vector (IV) in the database. It leverages SQLModel to\navoid code duplication with the Pydantic schema.\n\nAttributes:\n    id (str): A unique identifier for the encrypted content,\n              generated using UUID. This is used in URLs and avoids\n              Insecure Direct Object Reference (IDOR) attacks.\n    message (str): The encrypted message, stored in Base64 format.\n                   The message is not decipherable without the appropriate\n                   decryption key on the client side.\n    iv (str): The initialization vector (IV) used during encryption.\n              It can be sent in clear text, ensuring that even identical\n              content will have different ciphertexts.\n\nNotes:\n    - The `id` attribute is a UUID to prevent predictable or sequential\n      identifiers, thus reducing the risk of unauthorized access to content.\n      [IDOR](https://portswigger.net/web-security/access-control/idor).\n    - The `message` is encrypted using a symmetric encryption algorithm,\n      and its Base64 encoding ensures that binary data can be safely transmitted.\n    - The `iv` is an essential cryptographic component to ensure the security\n      of the encryption by introducing randomness. It helps prevent attacks\n      like replay or pattern recognition by guaranteeing that identical plaintext\n      messages result in different ciphertexts.\n\n    Most of the logic is done on the frontend using the native Crypto library available in\n    all recent browsers See [MDN Web Docs on Crypto](https://developer.mozilla.org/en-US/docs/Web/API/Crypto)."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

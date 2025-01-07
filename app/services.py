@@ -57,36 +57,12 @@ class MessageService:
     async def delete_message(message_id: str, session: Session) -> EncryptedContent:
         """Delete an encrypted message by ID."""
         message = session.get(EncryptedContent, message_id)
-
-        try:
-            if not message:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=ErrorMessages.MESSAGE_NOT_FOUND,
-                )
-            deleted_message = EncryptedContent.model_validate(message)
-            session.delete(message)
-            session.commit()
-            return deleted_message
-
-        except Exception:
-            session.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=ErrorMessages.DELETE_ERROR,
-            )
-
-    @staticmethod
-    async def delete_message(message_id: str, session: Session) -> EncryptedContent:
-        """Delete an encrypted message by ID."""
-        message = session.get(EncryptedContent, message_id)
         if not message:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=ErrorMessages.MESSAGE_NOT_FOUND,
             )
         try:
-
             deleted_message = EncryptedContent.model_validate(message)
             session.delete(message)
             session.commit()
