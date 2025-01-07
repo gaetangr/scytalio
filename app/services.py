@@ -22,7 +22,6 @@ class MessageService:
         try:
             session.add(encrypted_message)
             session.commit()
-            print(encrypted_message.burn_after_reading)
             session.refresh(encrypted_message)
             return EncryptedContent.model_validate(encrypted_message)
         except IntegrityError:

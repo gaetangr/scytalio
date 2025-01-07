@@ -1,6 +1,5 @@
 <template>
   <div class="container mx-auto p-4 md:p-10">
-
     <div class="shadow-xl rounded-xl p-6 md:p-10 max-w-5xl mx-auto bg-base-100">
       <h1 class="text-4xl font-bold mb-8 text-center text-base-content">Message Decryption</h1>
       
@@ -28,22 +27,9 @@
           </div>
 
           <div class="flex flex-wrap gap-4 justify-start mt-6">
-            <button 
-              @click="copyToClipboard(decryptedMessage)" 
-              class="btn btn-primary">
-              Copy Message
-            </button>
-            <button 
-              @click="downloadMessage" 
-              class="btn btn-secondary">
-              Download as Text
-            </button>
-            <button 
-              v-if="!messageData?.burn_after_reading" 
-              @click="deleteMessage" 
-              class="btn btn-error">
-              Delete Message
-            </button>
+            <button @click="copyToClipboard(decryptedMessage)" class="btn btn-primary">Copy Message</button>
+            <button @click="downloadMessage" class="btn btn-secondary">Download as Text</button>
+            <button v-if="!messageData?.burn_after_reading" @click="deleteMessage" class="btn btn-error">Delete Message</button>
           </div>
      
           <div class="alert alert-info shadow-lg mt-8">
@@ -72,6 +58,8 @@
 </template>
 
 <script>
+import { v4 as uuidv4 } from 'uuid';
+
 export default {
   props: ['messageId'], 
   
@@ -81,7 +69,7 @@ export default {
       errorMessage: null,
       isLoading: true,
       key: null,
-      messageData: null
+      messageData: null,
     };
   },
 
@@ -105,7 +93,6 @@ export default {
 
     async fetchAndDecrypt() {
       try {
-        console.log("Fetching message with ID:", this.messageId);
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/decrypt/${this.messageId}`);
         if (response.status === 429) {
           throw new Error("Too many requests. Please try again later.");
@@ -115,12 +102,11 @@ export default {
           throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
         }
         const result = await response.json();
-        console.log("Fetched data:", result);
+   
 
         this.messageData = result;
         const ivBytes = Uint8Array.from(this.fromBase64UrlSafe(result.iv), c => c.charCodeAt(0));
         const encryptedBytes = Uint8Array.from(this.fromBase64UrlSafe(result.message), c => c.charCodeAt(0));
-
         const keyBytes = Uint8Array.from(this.fromBase64UrlSafe(this.key), c => c.charCodeAt(0));
 
         const importedKey = await window.crypto.subtle.importKey(
@@ -139,12 +125,58 @@ export default {
 
         const dec = new TextDecoder();
         this.decryptedMessage = dec.decode(decrypted);
-        console.log("Decrypted message:", this.decryptedMessage);
       } catch (error) {
-        console.error("Error during decryption:", error);
         this.errorMessage = error.message || "An error occurred during decryption.";
       } finally {
         this.isLoading = false;
+      }
+    },
+
+    async generateHMAC(key, uuid) {
+      const cryptoKey = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(key),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+
+      const signature = await crypto.subtle.sign(
+        'HMAC',
+        cryptoKey,
+        new TextEncoder().encode(uuid)
+      );
+
+      return Array.from(new Uint8Array(signature))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    },
+
+    async deleteMessage() {
+      try {
+        const uuid = this.messageId;
+        const key = this.key;
+        const signatureHex = await this.generateHMAC(key, uuid);
+
+        const headers = new Headers();
+        headers.append('Authorization', signatureHex);
+
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/delete/${this.messageId}`, {
+          method: 'DELETE',
+          headers: headers
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
+        }
+
+        this.decryptedMessage = null;
+        console.log("Message deleted successfully");
+        this.$router.push('/');
+      } catch (error) {
+        console.error("Error during deletion:", error);
+        this.errorMessage = error.message || "An error occurred during deletion.";
       }
     },
 
@@ -166,24 +198,6 @@ export default {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-    },
-
-    async deleteMessage() {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/delete/${this.messageId}`, {
-          method: 'DELETE',
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
-        }
-        this.decryptedMessage = null;
-        console.log("Message deleted successfully");
-        this.$router.push('/');
-      } catch (error) {
-        console.error("Error during deletion:", error);
-        this.errorMessage = error.message || "An error occurred during deletion.";
-      }
     },
 
     isUrl(text) {

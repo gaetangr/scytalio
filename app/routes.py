@@ -70,6 +70,12 @@ async def delete_message(
     session: Annotated[Session, Depends(get_session)],
 ) -> EncryptedContent:
     """Delete an encrypted message."""
+    authorization_header_hmac = request.headers.get("Authorization")
+    expected_hmac = session.get(EncryptedContent, message_id).hmac
+    if not authorization_header_hmac or authorization_header_hmac != expected_hmac:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
     try:
         UUID(message_id)
         return await MessageService.delete_message(message_id, session)

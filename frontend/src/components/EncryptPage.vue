@@ -150,7 +150,10 @@
     </div>
   </div>
 </template>
+
 <script>
+import { v4 as uuidv4 } from 'uuid';
+
 export default {
   data() {
     return {
@@ -160,12 +163,23 @@ export default {
       iv: null,
       encryptedMessage: null,
       encryptedLink: null,
-      decryptedMessage: null,
       errorMessage: null,
       showCopyAlert: false,
     }
   },
   methods: {
+    async copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        this.showCopyAlert = true;
+        setTimeout(() => {
+          this.showCopyAlert = false;
+        }, 3000);
+      } catch (err) {
+        console.error("Failed to copy: ", err);
+      }
+    },
+
     toBase64UrlSafe(base64String) {
       return base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     },
@@ -183,8 +197,10 @@ export default {
       if (!this.validateForm()) {
         return;
       }
-  
+
       try {
+        const message_uuid = uuidv4();
+        console.log("Message UUID:", message_uuid);
         const enc = new TextEncoder();
         const encodedMessage = enc.encode(this.message);
 
@@ -197,22 +213,41 @@ export default {
           ["encrypt", "decrypt"]
         );
 
-        const exportedKey = await window.crypto.subtle.exportKey("raw", key);
-        this.generatedKey = this.toBase64UrlSafe(btoa(String.fromCharCode(...new Uint8Array(exportedKey))));
-
-        const ivBytes = window.crypto.getRandomValues(new Uint8Array(12)); 
-        this.iv = this.toBase64UrlSafe(btoa(String.fromCharCode(...ivBytes)));
-
-        const encrypted = await window.crypto.subtle.encrypt(
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const encryptedMessage = await window.crypto.subtle.encrypt(
           {
             name: "AES-GCM",
-            iv: ivBytes,
+            iv: iv,
           },
           key,
           encodedMessage
         );
 
-        this.encryptedMessage = this.toBase64UrlSafe(btoa(String.fromCharCode(...new Uint8Array(encrypted))));
+        const exportedKey = await window.crypto.subtle.exportKey("raw", key);
+        const base64Key = this.toBase64UrlSafe(btoa(String.fromCharCode(...new Uint8Array(exportedKey))));
+        const base64Message = this.toBase64UrlSafe(btoa(String.fromCharCode(...new Uint8Array(encryptedMessage))));
+        const base64Iv = this.toBase64UrlSafe(btoa(String.fromCharCode(...iv)));
+
+        this.generatedKey = base64Key;
+        this.iv = base64Iv;
+        this.encryptedMessage = base64Message;
+
+        const hmacKey = await window.crypto.subtle.importKey(
+          "raw",
+          new TextEncoder().encode(this.generatedKey),
+          { name: "HMAC", hash: "SHA-256" },
+          false,
+          ["sign"]
+        );
+
+        const signature = await window.crypto.subtle.sign(
+          'HMAC',
+          hmacKey,
+          new TextEncoder().encode(message_uuid)
+        );
+        const signatureHex = Array.from(new Uint8Array(signature))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
 
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/encrypt`, {
           method: 'POST',
@@ -222,7 +257,9 @@ export default {
           body: JSON.stringify({
             message: this.encryptedMessage,
             iv: this.iv,
-            burn_after_reading: this.burnAfterReading
+            id: message_uuid,
+            burn_after_reading: this.burnAfterReading,
+            hmac: signatureHex,
           }),
         });
 
@@ -247,19 +284,7 @@ export default {
         console.error("Error during encryption:", error);
         this.errorMessage = error.message || "An error occurred during encryption.";
       }
-    },
-    
-    async copyToClipboard(text) {
-      try {
-        await navigator.clipboard.writeText(text);
-        this.showCopyAlert = true;
-        setTimeout(() => {
-          this.showCopyAlert = false;
-        }, 3000);
-      } catch (err) {
-        console.error("Failed to copy: ", err);
-      }
-    },
-  },
+    }
+  }
 }
 </script>

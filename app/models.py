@@ -52,5 +52,8 @@ class EncryptedContent(SQLModel, table=True):
         description="Default to true, can be read only once and then it is deleted.",
         default=True,
     )
+    hmac: str = Field(
+        description="A hash-based message authentication code (HMAC) derived from the UUID and AES key stored on the client side. It is used to authorize requests."
+    )
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra="allow")
