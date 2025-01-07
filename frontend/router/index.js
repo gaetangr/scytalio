@@ -3,6 +3,9 @@ import Layout from '@/components/Layout.vue';
 import EncryptPage from '@/components/EncryptPage.vue';
 import DecryptMessage from '@/components/DecryptMessage.vue';
 import AboutPage from '@/components/AboutPage.vue';
+import TermsOfUsePage from '@/components/TermsOfUsePage.vue';
+import PrivacyPolicyPage from '@/components/PrivacyPolicyPage.vue';
+
 
 const routes = [
   {
@@ -31,6 +34,24 @@ const routes = [
         path: 'about',
         name: 'About',
         component: AboutPage,
+      },
+   
+      {
+        path: 'terms-of-use',
+        name: 'TermsOfUse',
+        component: TermsOfUsePage,
+      },
+      {
+        path: 'privacy-policy',
+        name: 'PrivacyPolicy',
+        component: PrivacyPolicyPage,
+      },
+      {
+        path: 'mit-license',
+        name: 'MITLicense',
+        beforeEnter() {
+          window.location.href = 'https://github.com/gaetangr/scytalio/blob/main/LICENSE';
+        },
       },
     ],
   },

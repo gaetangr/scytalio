@@ -69,23 +69,23 @@
         </aside>
         <nav>
           <h6 class="footer-title">Project</h6>
-          <a href="/docs" class="link link-hover">Documentation</a>
-          <a href="/api" class="link link-hover">API Reference</a>
-          <a href="/security" class="link link-hover">Security</a>
-          <a href="/examples" class="link link-hover">Examples</a>
+          <a href="https://gaetangr.github.io/scytalio/docs" class="link link-hover">Documentation</a>
+          <a href="https://gaetangr.github.io/scytalio/docs" class="link link-hover">API Reference</a>
+          <a href="https://github.com/gaetangr/scytalio?tab=security-ov-file#reporting-a-bug" class="link link-hover">Security</a>
+          <a href="https://github.com/gaetangr/scytalio?tab=readme-ov-file#api-usage" class="link link-hover">Examples</a>
         </nav>
         <nav>
           <h6 class="footer-title">Community</h6>
           <a href="/about" class="link link-hover">About us</a>
-          <a href="https://github.com/yourusername/scytalio" class="link link-hover">GitHub</a>
-          <a href="/contribute" class="link link-hover">Contribute</a>
-          <a href="/roadmap" class="link link-hover">Roadmap</a>
+          <a href="https://github.com/gaetangr/scytalio" class="link link-hover">GitHub</a>
+          <a href="https://github.com/gaetangr/scytalio/pulls" class="link link-hover">Contribute</a>
+          <a href="https://github.com/users/gaetangr/projects/5" class="link link-hover">Roadmap</a>
         </nav>
         <nav>
           <h6 class="footer-title">Legal</h6>
-          <a href="/terms" class="link link-hover">Terms of use</a>
-          <a href="/privacy" class="link link-hover">Privacy policy</a>
-          <a href="/license" class="link link-hover">MIT License</a>
+          <router-link to="/terms-of-use" class="link link-hover">Terms of use</router-link>
+          <router-link to="/privacy-policy" class="link link-hover">Privacy Policy</router-link>
+          <a href="https://github.com/gaetangr/scytalio?tab=MIT-1-ov-file" class="link link-hover">MIT License</a>
         </nav>
       </footer>
     </div>
