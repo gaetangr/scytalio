@@ -1,15 +1,13 @@
-name: Deploy static content to Pages
+name: Deploy Docs
 
 on:
   push:
-    branches: ["main"]
-
-  workflow_dispatch:
+    branches:
+      - main
 
 permissions:
-  contents: read
-  pages: write
   id-token: write
+  contents: write
 
 concurrency:
   group: "pages"
@@ -36,6 +34,8 @@ jobs:
           pip install -r app/requirements.txt
 
       - name: Generate static docs
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
         run: |
           python app/main.py
 
@@ -50,7 +50,3 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'app/static'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
