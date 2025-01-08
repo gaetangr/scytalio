@@ -19,6 +19,8 @@ def encrypted_content():
     return EncryptedContent(
         message="SGVsbG8gd29ybGQ=",
         iv="test_iv",
+        hmac="SGVsbG8gd29ybGQ",
+        burn_after_reading=True,
     )
 
 

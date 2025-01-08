@@ -4,7 +4,7 @@ from typing import Generator
 
 settings = Settings()
 
-engine = create_engine(settings.DATABASE_URL, echo=settings.DEBUG)
+engine = create_engine(settings.DATABASE_URL, echo=False)
 
 
 def create_db_and_tables() -> None:

@@ -1,5 +1,17 @@
+import uuid
+
+
 def test_encrypt_endpoint(client):
-    response = client.post("/encrypt", json={"message": "test", "iv": "test"})
+    response = client.post(
+        "/encrypt",
+        json={
+            "message": "test",
+            "iv": "test",
+            "burn_after_reading": False,
+            "hmac": str(uuid.uuid4()),
+        },
+    )
+    print(response.json())
     assert response.status_code == 201
 
 

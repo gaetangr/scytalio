@@ -48,46 +48,7 @@
         <router-view></router-view>
       </main>
   
-      <footer class="footer bg-base-200 text-base-content p-10">
-        <aside>
-          <svg
-            width="50"
-            height="50"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            class="fill-current"
-          >
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 2c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8 3.59-8 8-8zm1 3v4h4v2h-4v4h-2v-4H7v-2h4V7h2z"
-            />
-          </svg>
-          <p>
-            Scytalio - Open Source E2EE Message Service
-            <br />
-            Secure messaging since 2024
-          </p>
-        </aside>
-        <nav>
-          <h6 class="footer-title">Project</h6>
-          <a href="https://gaetangr.github.io/scytalio/docs" class="link link-hover">Documentation</a>
-          <a href="https://gaetangr.github.io/scytalio/docs" class="link link-hover">API Reference</a>
-          <a href="https://github.com/gaetangr/scytalio?tab=security-ov-file#reporting-a-bug" class="link link-hover">Security</a>
-          <a href="https://github.com/gaetangr/scytalio?tab=readme-ov-file#api-usage" class="link link-hover">Examples</a>
-        </nav>
-        <nav>
-          <h6 class="footer-title">Community</h6>
-          <a href="/about" class="link link-hover">About us</a>
-          <a href="https://github.com/gaetangr/scytalio" class="link link-hover">GitHub</a>
-          <a href="https://github.com/gaetangr/scytalio/pulls" class="link link-hover">Contribute</a>
-          <a href="https://github.com/users/gaetangr/projects/5" class="link link-hover">Roadmap</a>
-        </nav>
-        <nav>
-          <h6 class="footer-title">Legal</h6>
-          <router-link to="/terms-of-use" class="link link-hover">Terms of use</router-link>
-          <router-link to="/privacy-policy" class="link link-hover">Privacy Policy</router-link>
-          <a href="https://github.com/gaetangr/scytalio?tab=MIT-1-ov-file" class="link link-hover">MIT License</a>
-        </nav>
-      </footer>
+  
     </div>
   </template>
   

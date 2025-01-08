@@ -12,12 +12,9 @@ const routes = [
     path: '/',
     component: Layout,
     children: [
+     
       {
         path: '',
-        redirect: '/encrypt', 
-      },
-      {
-        path: 'encrypt',
         name: 'Encrypt',
         component: EncryptPage,
       },

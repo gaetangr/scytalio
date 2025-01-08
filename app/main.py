@@ -17,7 +17,7 @@ settings = Settings()
 def create_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        create_db_and_tables()
+        await create_db_and_tables()
         try:
             yield
         finally:

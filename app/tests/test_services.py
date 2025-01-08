@@ -17,6 +17,7 @@ async def test_create_message_success(session, encrypted_content):
     session.add.assert_called_once()
     session.commit.assert_called_once()
     session.refresh.assert_called_once()
+    print(result.json())
     assert result.message == encrypted_content.message
     assert result.iv == encrypted_content.iv
 
