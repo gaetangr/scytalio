@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "format": "prettier --write \"src/**/*.{js,vue,css}\""
   },
   "dependencies": {
+    "prettier": "^3.4.2",
     "uuid": "^11.0.4",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
