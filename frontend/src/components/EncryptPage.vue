@@ -2,7 +2,7 @@
   <div>
     <Toast :show="showToast" :text="toastText" :type="toastType" />
   </div>
-  <div class="container mx-auto p-4 md:p-8 lg:p-12 max-w-7xl">
+  <div class="container mx-auto p-4 md:p-8 lg:p-12 max-w-5xl">
     <!-- Hero Section -->
     <div class="text-center mb-12">
       <h1 class="text-4xl md:text-5xl font-bold mb-4 text-primary">Secure Message Sharing</h1>
