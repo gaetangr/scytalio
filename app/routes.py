@@ -3,10 +3,12 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 from uuid import UUID
 
+from sqlmodel import select
+
 from utils import is_base64
 from settings import Settings
 from constants import APIEndpoints
-from models import EncryptedContent
+from models import EncryptedContent, WebsiteStats
 from services import MessageService
 from database import get_session
 from slowapi.util import get_remote_address
@@ -84,3 +86,22 @@ async def delete_message(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid message ID format, UUID expected.",
         )
+
+
+@router.get(
+    "/stats",
+    response_model=WebsiteStats,
+    summary="Get website statistics",
+    description="Retrieve global statistics about website usage",
+)
+async def get_website_stats(session: Session = Depends(get_session)):
+    """Get global website statistics."""
+    stats = session.exec(
+        select(WebsiteStats).where(WebsiteStats.id == "global_stats")
+    ).first()
+    if not stats:
+        stats = WebsiteStats()
+        session.add(stats)
+        await session.commit()
+        await session.refresh(stats)
+    return stats

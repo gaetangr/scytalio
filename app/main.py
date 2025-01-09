@@ -4,7 +4,6 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 from settings import Settings
-from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -15,7 +14,6 @@ settings = Settings()
 
 
 def create_app() -> FastAPI:
-
     def lifespan(app: FastAPI):
         create_db_and_tables()
         try:

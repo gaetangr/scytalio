@@ -57,10 +57,48 @@
       <router-view></router-view>
     </main>
   </div>
+  <footer class="footer footer-center p-4 bg-base-200 text-base-content">
+    <div class="tooltip tooltip-top" data-tip="Total encrypted messages created">
+      <div class="badge badge-lg gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <span>{{ totalLinks || '...' }} messages encrypted</span>
+      </div>
+    </div>
+  </footer>
 </template>
 
 <script>
-  export default {
-    name: 'Layout',
-  };
+export default {
+  name: 'Layout',
+  data() {
+    return {
+      totalLinks: 0,
+      statsInterval: null
+    }
+  },
+  async mounted() {
+    await this.fetchStats();
+    this.statsInterval = setInterval(this.fetchStats, 30000); // Refresh every 30s
+  },
+  beforeUnmount() {
+    if (this.statsInterval) {
+      clearInterval(this.statsInterval);
+    }
+  },
+  methods: {
+    async fetchStats() {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/stats`);
+        if (response.ok) {
+          const data = await response.json();
+          this.totalLinks = data.total_links_generated;
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
+    }
+  }
+};
 </script>

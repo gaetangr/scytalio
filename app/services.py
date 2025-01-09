@@ -1,7 +1,8 @@
+from datetime import datetime
 from fastapi import HTTPException, status
 from sqlmodel import Session
 from constants import ErrorMessages
-from models import EncryptedContent
+from models import EncryptedContent, WebsiteStats
 from sqlalchemy.exc import IntegrityError
 
 
@@ -23,6 +24,14 @@ class MessageService:
             session.add(encrypted_message)
             session.commit()
             session.refresh(encrypted_message)
+            website = session.get(WebsiteStats, "global_stats")
+            if not website:
+                website = WebsiteStats(id="global_stats")
+                session.add(website)
+
+            website.total_links_generated += 1
+            website.last_link_generated = datetime.utcnow()
+            session.commit()
             return EncryptedContent.model_validate(encrypted_message)
         except IntegrityError:
             session.rollback()

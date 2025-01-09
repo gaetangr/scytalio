@@ -1,3 +1,5 @@
+from datetime import datetime
+from typing import Optional
 import uuid
 from pydantic import ConfigDict
 from sqlmodel import Field, SQLModel
@@ -57,3 +59,15 @@ class EncryptedContent(SQLModel, table=True):
     )
 
     model_config = ConfigDict(from_attributes=True, extra="allow")
+
+
+class WebsiteStats(SQLModel, table=True):
+    """Track website statistics with single instance pattern"""
+
+    id: str = Field(default="global_stats", primary_key=True)
+    total_links_generated: int = Field(
+        default=0, description="Total number of links created"
+    )
+    last_link_generated: Optional[datetime] = Field(default=None)
+
+    model_config = ConfigDict(from_attributes=True)
