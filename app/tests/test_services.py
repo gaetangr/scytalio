@@ -14,10 +14,9 @@ async def test_create_message_success(session, encrypted_content):
 
     result = await MessageService.create_message(encrypted_content, session)
 
-    session.add.assert_called_once()
-    session.commit.assert_called_once()
-    session.refresh.assert_called_once()
-    print(result.json())
+    assert session.commit.call_count == 2
+    assert session.refresh.call_count == 1
+    assert session.add.call_count == 2
     assert result.message == encrypted_content.message
     assert result.iv == encrypted_content.iv
 
