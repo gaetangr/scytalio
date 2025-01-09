@@ -2,7 +2,7 @@
   <div>
     <Toast :show="showToast" :text="toastText" :type="toastType" />
   </div>
-  <div class="container mx-auto p-4 md:p-8 lg:p-12 max-w-4xl">
+  <div class="container mx-auto p-4 md:p-8 lg:p-12 max-w-7xl">
     <!-- Hero Section -->
     <div class="text-center mb-12">
       <h1 class="text-4xl md:text-5xl font-bold mb-4 text-primary">Secure Message Sharing</h1>
@@ -77,9 +77,15 @@
             </div>
             <button
               @click="encryptMessage"
+              :disabled="!canEncrypt || isEncrypting"
+              :class="{
+                'btn-disabled': !canEncrypt,
+                loading: isEncrypting,
+              }"
               class="btn btn-primary w-full sm:w-auto gap-2 min-w-[200px]"
             >
               <svg
+                v-if="!isEncrypting"
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5"
                 fill="none"
@@ -93,7 +99,7 @@
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                 />
               </svg>
-              Encrypt Message
+              {{ isEncrypting ? 'Encrypting...' : 'Encrypt Message' }}
             </button>
           </div>
 
@@ -278,6 +284,7 @@
     data() {
       return {
         message: '',
+        lastEncryptedHash: null,
         burnAfterReading: true,
         generatedKey: null,
         iv: null,
@@ -287,9 +294,20 @@
         showCopyAlert: false,
         showToast: false,
         copyButtonClicked: false,
+        isEncrypting: false,
       };
     },
-
+    computed: {
+      canEncrypt() {
+        return this.message.trim().length > 0;
+      },
+      messageHash() {
+        return this.message ? btoa(this.message) : null;
+      },
+      isMessageAlreadyEncrypted() {
+        return this.messageHash && this.messageHash === this.lastEncryptedHash;
+      },
+    },
     methods: {
       async handleCopy(text) {
         try {
@@ -320,10 +338,16 @@
       },
 
       async encryptMessage() {
-        if (!this.validateForm()) {
+        if (!this.canEncrypt || this.isEncrypting) return;
+        if (this.isMessageAlreadyEncrypted) {
+          this.showToast = true;
+          this.toastText = 'Message already encrypted';
+          this.toastType = 'error';
           return;
         }
 
+        this.isEncrypting = true;
+        this.errorMessage = null;
         try {
           const message_uuid = uuidv4();
           console.log('Message UUID:', message_uuid);
@@ -412,9 +436,20 @@
           const messageId = result.id;
 
           this.encryptedLink = `${window.location.origin}/decrypt/${messageId}?key=${this.generatedKey}`;
+          this.lastEncryptedHash = this.messageHash;
         } catch (error) {
           console.error('Error during encryption:', error);
           this.errorMessage = error.message || 'An error occurred during encryption.';
+        } finally {
+          this.isEncrypting = false;
+        }
+      },
+    },
+    watch: {
+      message() {
+        if (this.encryptedMessage && !this.isMessageAlreadyEncrypted) {
+          this.encryptedMessage = null;
+          this.encryptedLink = null;
         }
       },
     },
