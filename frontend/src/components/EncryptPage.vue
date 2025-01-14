@@ -1,15 +1,16 @@
 <template>
-  <div>
+<div>
     <Toast :show="showToast" :text="toastText" :type="toastType" />
-  </div>
-  <div class="container mx-auto p-4 md:p-8 lg:p-12 max-w-5xl">
-    <!-- Hero Section -->
+
     <div class="text-center mb-12">
-      <h1 class="text-4xl md:text-5xl font-bold mb-4 text-primary">Secure Message Sharing</h1>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 text-primary shine-effect">
+        {{ animatedTitle }}
+      </h1>
       <p class="text-lg text-base-content/80">
-        End-to-end encrypted messages that disappear after reading.
+        {{ animatedDescription }}
       </p>
     </div>
+
 
     <!-- Main Form Section -->
     <div class="card bg-base-100 shadow-2xl">
@@ -283,6 +284,14 @@
     },
     data() {
       return {
+        originalTitle: 'Secure Message Sharing',
+      originalDescription: 'End-to-end encrypted messages that disappear after reading.',
+      animatedTitle: '',
+      animatedDescription: '',
+      characters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()',
+      showToast: false,
+      toastText: '',
+      toastType: '',
         message: '',
         lastEncryptedHash: null,
         burnAfterReading: true,
@@ -309,6 +318,36 @@
       },
     },
     methods: {
+      scrambleText(text) {
+      if (!text) return '';
+      return text
+        .split('')
+        .map(() => this.characters.charAt(Math.floor(Math.random() * this.characters.length)))
+        .join('');
+    },
+
+    async animateDecryption() {
+      // Initialize with original text
+      this.animatedTitle = this.originalTitle;
+      this.animatedDescription = this.originalDescription;
+
+      const steps = 15;
+      const stepDuration = 100;
+
+      // Animation sequence
+      for (let i = 0; i < steps; i++) {
+        await new Promise(resolve => setTimeout(resolve, stepDuration));
+        
+        if (i === steps - 1) {
+          this.animatedTitle = this.originalTitle;
+          this.animatedDescription = this.originalDescription;
+        } else {
+          this.animatedTitle = this.scrambleText(this.originalTitle);
+          this.animatedDescription = this.scrambleText(this.originalDescription);
+        }
+      }
+    }
+  ,
       async handleCopy(text) {
         try {
           await copyToClipboard(text);
@@ -452,6 +491,16 @@
           this.encryptedLink = null;
         }
       },
+
     },
+    mounted() {
+      this.animateDecryption()
+  },
   };
 </script>
+
+<style scoped>
+.shine-effect {
+  transition: all 0.3s ease;
+}
+</style>
