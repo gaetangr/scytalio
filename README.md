@@ -174,3 +174,105 @@ Scytalio can be self-hosted, allowing you to run your own instance of the applic
 - **Customizable**: Modify the source code to fit your specific needs.
 
 To get started with self-hosting, follow the instructions in the "Running the Application with Docker and Nginx" section above.
+
+## Development Environment Setup
+
+To set up the development environment for Scytalio, follow these steps:
+
+1. **Clone the Repository**: Start by cloning the repository to your local machine.
+
+    ```sh
+    git clone https://github.com/gaetangr/scytalio.git
+    cd scytalio
+    ```
+
+2. **Create a Virtual Environment**: Create a virtual environment to isolate the project's dependencies.
+
+    ```sh
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3. **Install Backend Dependencies**: Install the required Python packages for the backend.
+
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+4. **Install Frontend Dependencies**: Navigate to the frontend directory and install the required Node.js packages.
+
+    ```sh
+    cd frontend
+    npm install
+    ```
+
+5. **Set Up Environment Variables**: Create a `.env` file in the root directory and add the necessary environment variables.
+
+    ```sh
+    echo "DATABASE_URL=sqlite:///./scytalio.db" > .env
+    echo "VITE_API_BASE_URL=http://localhost:8000" >> .env
+    ```
+
+6. **Run the Application**: Start both the backend and frontend applications.
+
+    ```sh
+    # Start the backend
+    uvicorn app.main:app --reload
+
+    # In a new terminal, start the frontend
+    cd frontend
+    npm run serve
+    ```
+
+7. **Access the Application**: The backend API will be available at `http://127.0.0.1:8000/docs`, and the frontend will be available at `http://localhost:8080`.
+
+## API Endpoints
+
+Here are some examples of how to use the API endpoints:
+
+### Encrypt a Message
+
+To encrypt a message, send a POST request to the `/encrypt` endpoint with the following JSON payload:
+
+```json
+{
+  "message": "your_base64_encoded_message",
+  "iv": "your_initialization_vector"
+}
+```
+
+Example using `curl`:
+
+```sh
+curl -X POST "http://127.0.0.1:8000/encrypt" -H "Content-Type: application/json" -d '{"message": "dGVzdCBtZXNzYWdl", "iv": "dGVzdF9pdg=="}'
+```
+
+### Decrypt a Message
+
+To decrypt a message, send a GET request to the `/decrypt/{message_id}` endpoint, where `{message_id}` is the ID of the encrypted message.
+
+Example using `curl`:
+
+```sh
+curl -X GET "http://127.0.0.1:8000/decrypt/{message_id}"
+```
+
+### Delete a Message
+
+To delete a message, send a DELETE request to the `/delete/{message_id}` endpoint, where `{message_id}` is the ID of the encrypted message. You will need to include the HMAC in the Authorization header.
+
+Example using `curl`:
+
+```sh
+curl -X DELETE "http://127.0.0.1:8000/delete/{message_id}" -H "Authorization: your_hmac"
+```
+
+### Get Website Statistics
+
+To retrieve global statistics about website usage, send a GET request to the `/stats` endpoint.
+
+Example using `curl`:
+
+```sh
+curl -X GET "http://127.0.0.1:8000/stats"
+```

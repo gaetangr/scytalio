@@ -14,7 +14,25 @@ settings = Settings()
 
 
 def create_app() -> FastAPI:
+    """
+    Create and configure the FastAPI application.
+
+    This function sets up the FastAPI application, including database
+    initialization, rate limiting, CORS middleware, and route inclusion.
+
+    Returns:
+        FastAPI: The configured FastAPI application instance.
+    """
     def lifespan(app: FastAPI):
+        """
+        Lifespan context for the FastAPI application.
+
+        This context is used to perform setup and teardown tasks for the
+        application, such as creating database tables.
+
+        Args:
+            app (FastAPI): The FastAPI application instance.
+        """
         create_db_and_tables()
         try:
             yield

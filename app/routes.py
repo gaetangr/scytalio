@@ -27,7 +27,20 @@ router = APIRouter()
 async def get_message(
     request: Request, message_id: str, session: Annotated[Session, Depends(get_session)]
 ) -> EncryptedContent:
-    """Retrieve an encrypted message by ID."""
+    """
+    Retrieve an encrypted message by ID.
+
+    Args:
+        request (Request): The request object.
+        message_id (str): The ID of the encrypted message.
+        session (Annotated[Session, Depends(get_session)]): The database session.
+
+    Returns:
+        EncryptedContent: The encrypted message.
+
+    Raises:
+        HTTPException: If the message ID format is invalid or the message is not found.
+    """
     try:
         UUID(message_id)
         return await MessageService.get_message(message_id, session)
@@ -49,7 +62,20 @@ async def create_message(
     content: EncryptedContent,
     session: Annotated[Session, Depends(get_session)],
 ) -> EncryptedContent:
-    """Create a new encrypted message."""
+    """
+    Create a new encrypted message.
+
+    Args:
+        request (Request): The request object.
+        content (EncryptedContent): The encrypted message content.
+        session (Annotated[Session, Depends(get_session)]): The database session.
+
+    Returns:
+        EncryptedContent: The created encrypted message.
+
+    Raises:
+        HTTPException: If the message format is invalid.
+    """
     try:
         is_base64(content.message)
         return await MessageService.create_message(content, session)
@@ -71,7 +97,20 @@ async def delete_message(
     message_id: str,
     session: Annotated[Session, Depends(get_session)],
 ) -> EncryptedContent:
-    """Delete an encrypted message."""
+    """
+    Delete an encrypted message.
+
+    Args:
+        request (Request): The request object.
+        message_id (str): The ID of the encrypted message.
+        session (Annotated[Session, Depends(get_session)]): The database session.
+
+    Returns:
+        EncryptedContent: The deleted encrypted message.
+
+    Raises:
+        HTTPException: If the authorization header is missing or invalid, or if the message ID format is invalid.
+    """
     authorization_header_hmac = request.headers.get("Authorization")
     expected_hmac = session.get(EncryptedContent, message_id).hmac
     if not authorization_header_hmac or authorization_header_hmac != expected_hmac:
@@ -95,7 +134,15 @@ async def delete_message(
     description="Retrieve global statistics about website usage",
 )
 async def get_website_stats(session: Session = Depends(get_session)):
-    """Get global website statistics."""
+    """
+    Get global website statistics.
+
+    Args:
+        session (Session, optional): The database session. Defaults to Depends(get_session).
+
+    Returns:
+        WebsiteStats: The global website statistics.
+    """
     stats = session.exec(
         select(WebsiteStats).where(WebsiteStats.id == "global_stats")
     ).first()

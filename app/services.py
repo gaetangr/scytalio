@@ -14,7 +14,19 @@ class MessageService:
     async def create_message(
         encrypted_message: EncryptedContent, session: Session
     ) -> EncryptedContent:
-        """Create a new encrypted message."""
+        """
+        Create a new encrypted message.
+
+        Args:
+            encrypted_message (EncryptedContent): The encrypted message content.
+            session (Session): The database session.
+
+        Returns:
+            EncryptedContent: The created encrypted message.
+
+        Raises:
+            HTTPException: If the message is empty or if there is an integrity error.
+        """
         if not encrypted_message.message:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -42,7 +54,19 @@ class MessageService:
 
     @staticmethod
     async def get_message(message_id: str, session: Session) -> EncryptedContent:
-        """Retrieve an encrypted message by ID."""
+        """
+        Retrieve an encrypted message by ID.
+
+        Args:
+            message_id (str): The ID of the encrypted message.
+            session (Session): The database session.
+
+        Returns:
+            EncryptedContent: The retrieved encrypted message.
+
+        Raises:
+            HTTPException: If the message is not found or if there is an error while deleting the message.
+        """
         message = session.get(EncryptedContent, message_id)
         if message:
             try:
@@ -63,7 +87,19 @@ class MessageService:
 
     @staticmethod
     async def delete_message(message_id: str, session: Session) -> EncryptedContent:
-        """Delete an encrypted message by ID."""
+        """
+        Delete an encrypted message by ID.
+
+        Args:
+            message_id (str): The ID of the encrypted message.
+            session (Session): The database session.
+
+        Returns:
+            EncryptedContent: The deleted encrypted message.
+
+        Raises:
+            HTTPException: If the message is not found or if there is an error while deleting the message.
+        """
         message = session.get(EncryptedContent, message_id)
         if not message:
             raise HTTPException(
