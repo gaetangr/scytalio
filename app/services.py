@@ -6,7 +6,6 @@ from models import EncryptedContent, WebsiteStats
 from sqlalchemy.exc import IntegrityError
 
 
-# NOTE: Is @staticmethod make sense here ?
 class MessageService:
     """Business logic for message handling"""
 
